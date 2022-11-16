@@ -2,7 +2,6 @@
 from re import I
 from game.ship import *
 from game.context import Context
-import jsonpickle
 from game.display import announce
 import game.config as config
 
@@ -32,8 +31,6 @@ class Player (Context):
         self.verbs['quit'] = self
         self.verbs['status'] = self
         self.verbs['go'] = self
-        self.verbs['save'] = self
-        self.verbs['load'] = self
         self.verbs['debug'] = self
         self.verbs['map'] = self
 
@@ -53,17 +50,6 @@ class Player (Context):
         elif (verb == "debug"):
             announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
-        elif (verb == "save"):
-            announce ("saving...", end="",pause=False)
-            f = open ("save.json", "w")
-            f.write (jsonpickle.encode (self))
-            f.close()
-            announce ("..done")
-        elif (verb == "load"):
-            with open ("save.json") as f:
-                s = f.read()    
-            config.the_player = jsonpickle.decode (s)
-            self.go = True
         elif (verb == "status"):
             self.print()
         elif (verb == "go"):
