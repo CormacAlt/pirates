@@ -49,6 +49,8 @@ class Ship (Context):
                         self.medicine =  self.medicine - 1
                     else:
                         announce ("no more medicine to give")
+            else:
+                announce ("Give medicine to who?")
         else:
             announce ("Error: Ship object doe not understand verb " + verb)
 
@@ -84,9 +86,11 @@ class Ship (Context):
         return self.food
 
     def take_food (self, amt):
-        return None
         self.food = self.food - amt
 
+    def enter (self):
+        pass
+        
     def end_day (self, world):
 
         if ((self.hx != 0) or (self.hy != 0)):

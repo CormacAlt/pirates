@@ -4,6 +4,9 @@ from game.ship import *
 from game.context import Context
 from game.display import announce
 import game.config as config
+from game.items import *
+import sys
+import datetime
 
 class Player (Context):
 
@@ -22,6 +25,18 @@ class Player (Context):
         self.go = False
         self.pirates = []
         self.piscine_dormitory = []
+        self.CHARGE_SIZE = 128
+        self.powder = self.CHARGE_SIZE*random.randrange(3,7)
+        self.inventory = []
+        n = random.randrange(2,6)
+        for i in range (0,n):
+            if random.randrange(0,10) == 0:
+                itm = Flintlock()
+            else:
+                itm = Cutlass()
+            self.inventory.append(itm)
+        self.inventory.sort()
+
         n = random.randrange(3,7)
         for i in range (0,n):
             c = CrewMate()
@@ -33,6 +48,7 @@ class Player (Context):
         self.verbs['go'] = self
         self.verbs['debug'] = self
         self.verbs['map'] = self
+        self.verbs['inventory'] = self
 
         self.seen = []
         for i in range (0, self.world.worldsize):
@@ -43,13 +59,35 @@ class Player (Context):
 
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "quit"):
-            self.gameInProgress = False
-            self.go = True
+            sys.exit(0)
         elif (verb == "map"):
             self.print_map ()
+        elif (verb == "inventory"):
+            self.print_inventory ()
         elif (verb == "debug"):
             announce ("home port is at:" + str(self.world.homex) + ", " + str(self.world.homey))
             self.world.print ()
+        elif (verb == "save"):
+            if "jsonpickle" not in sys.modules:
+                announce ("jsonpickle hasn't be imported. Saving is impossible.")
+            elif self.location != self.ship:
+                announce ("Saving is only possible abord ship.")
+            else:
+                announce ("saving...", end="",pause=False)
+                f = open ("save.json", "w")
+                f.write (jsonpickle.encode (self))
+                f.close()
+                announce ("..done")
+        elif (verb == "load"):
+            if "jsonpickle" not in sys.modules:
+                announce ("jsonpickle hasn't be imported. Loading is impossible.")
+            elif self.location != self.ship:
+                announce ("Loading is only possible abord ship.")
+            else:
+                with open ("save.json") as f:
+                    s = f.read()    
+                config.the_player = jsonpickle.decode (s)
+                self.go = True
         elif (verb == "status"):
             self.print()
         elif (verb == "go"):
@@ -124,6 +162,7 @@ class Player (Context):
             loc = self.ship.get_loc()
             announce (str(loc.get_x()) + ", " + str(loc.get_y()),pause=False)
             announce ("Food stores are at: " + str (self.ship.get_food()),pause=False)
+            announce ("Powder stores are at: " + str (self.powder//self.CHARGE_SIZE) + " cannon " + str (self.powder%self.CHARGE_SIZE) + " sidearm",pause=False)
             self.ship.print ()
             for crew in self.get_pirates():
                 crew.print()
@@ -161,26 +200,45 @@ class Player (Context):
         return self.world
 
     def get_pirates (self):
-        return [p for p in self.pirates if p.health > 0]
+        live_pirates = [p for p in self.pirates if p.health > 0]
+        if len(live_pirates) <= 0 and self.gameInProgress == True:
+            self.cleanup_pirates() #calls game over
+        return live_pirates
 
     def cleanup_pirates (self):
         i = 0
+        recovery_possible = True
+        #avoid endless recursion between get pirates and cleanup pirates
+        live_pirates = [p for p in self.pirates if p.health > 0]
+        if len(live_pirates) <= 0:
+            recovery_possible = False
+
         while i < len(self.pirates):
             if (self.pirates[i].health <= 0):
                 deader = self.pirates.pop(i)
+                self.add_to_inventory(deader.items)
+                deader.items = []
                 self.piscine_dormitory.append(deader)
             else:
                 i = i + 1
         if (len(self.pirates) <= 0):
             announce (" everyone died!!!!!!!!!!")
-            self.gameInProgress = False
+            Player.game_over()
 
     def kill_all_pirates (self, deathcause):
+        announce (" everyone died!!!!!!!!!!")
         while len(self.pirates) > 0:
             deader = self.pirates.pop()
-            if(deader.death_cause != ""):
+            if(deader.death_cause == ""):
                 deader.death_cause = deathcause
+            self.add_to_inventory(deader.items)
+            deader.items = []
             self.piscine_dormitory.append(deader)
+        Player.game_over()
+
+    def add_to_inventory (self, invList):
+        self.inventory = self.inventory + invList
+        self.inventory.sort()
 
     def print_map (self):
         ship_loc = self.ship.get_loc()
@@ -194,3 +252,39 @@ class Player (Context):
                     print ("?", end="")
             print ()
 
+    def print_inventory (self):
+        for i in self.inventory:
+            print (i)
+        print ()
+
+    @staticmethod
+    def game_over ():
+        config.the_player.gameInProgress = False
+        #open high score
+        Player.record_score()
+        sys.exit(0)
+
+    @staticmethod
+    def record_score():
+        f = open("scores.log", "a")
+        now = datetime.datetime.now()
+        score = 0
+        multiplier = 1
+        if len(config.the_player.pirates) <= 0:
+            multiplier = .5 #living to spend it is half the fun.
+        else:
+            for c in config.the_player.pirates:
+                score += c.health * 10
+        for t in config.the_player.inventory:
+            score += t.value
+
+        score = score*multiplier
+        f.write(now.strftime("%A %B %d, %Y") + " " + str(score) + " points\n")
+        for c in config.the_player.pirates:
+            f.write(str(c) + "lived to tell the tale\n")
+        for d in config.the_player.piscine_dormitory:
+            f.write(str(d) + "\n")
+        for i in config.the_player.inventory:
+            f.write(str(i) + "\n")
+        f.write("----------------------\n\n")
+        

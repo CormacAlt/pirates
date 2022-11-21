@@ -13,7 +13,7 @@ class Island (location.Location):
         self.visitable = True
         self.starting_location = Beach_with_ship(self)
         self.locations = {}
-        self.locations["beach"] = self.starting_location
+        self.locations["dock"] = self.starting_location
         self.locations["trees"] = Trees(self)
 
     def enter (self, ship):
