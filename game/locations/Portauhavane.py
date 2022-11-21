@@ -11,20 +11,20 @@ class Island (location.Location):
         self.name = "island"
         self.symbol = 'I'
         self.visitable = True
-        self.starting_location = Beach_with_ship(self)
+        self.starting_location = Dock_with_ship(self)
         self.locations = {}
         self.locations["dock"] = self.starting_location
-        self.locations["trees"] = Trees(self)
+        self.locations["soilder's office"] = office(self)
 
     def enter (self, ship):
-        print ("arrived at an island")
+        print ("You and your crew come apon the cosat of a vast island\nYou pass various large sugar planations and notice ominous plooms of smoke\nYou also see what seems to be a busy port in the distance")
 
     def visit (self):
         config.the_player.location = self.starting_location
         config.the_player.location.enter()
         super().visit()
 
-class Beach_with_ship (location.SubLocation):
+class Dock_with_ship (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
         self.name = "beach"
@@ -37,7 +37,7 @@ class Beach_with_ship (location.SubLocation):
         self.events.append(drowned_pirates.DrownedPirates())
 
     def enter (self):
-        announce ("arrive at the beach. Your ship is at anchor in a small bay to the south.")
+        announce ("You enter the port and begin to approuch a small dock /nYou notice grea ships of war was well as various commercial ships moving around in a great sence of panic/nAs you get closer to the dock you notice military men dressed in a depp navy blue waiting to question you")
     
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south"):
@@ -50,7 +50,7 @@ class Beach_with_ship (location.SubLocation):
             announce ("You walk all the way around the island on the beach. It's not very interesting.")
 
 
-class Trees (location.SubLocation):
+class office (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
         self.name = "trees"
