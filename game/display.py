@@ -1,17 +1,21 @@
-
+import sys
 the_display = None
 
 class Display ():
     pass
 
-def announce(announcement, end='\n', pause = True):
+def announce(announcement, end='\n', pause = True , types = ""):
     #if(the_display != None):
     #   display stuff
     #else:
+    color = sys.stdout.shell
     if(pause):
-        input (announcement)
+        end = ''
+        color.write(announcement, types)
+        input ()
+        #input (announcement)
     else:
-        print (announcement, end)
+        color.write(announcement + end, types)
 
 def menu(options):
     #if(the_display != None):

@@ -17,7 +17,7 @@ class Island (location.Location):
         self.locations["soilder's office"] = office(self)
 
     def enter (self, ship):
-        print ("You and your crew come apon the cosat of a vast island\nYou pass various large sugar planations and notice ominous plooms of smoke\nYou also see what seems to be a busy port in the distance")
+        announce ("You and your crew come apon the coast of a vast island\nYou pass various large sugar planations and notice ominous plooms of smoke\nYou also see what seems to be a busy port in the distance", types = "COMMENT")
 
     def visit (self):
         config.the_player.location = self.starting_location
@@ -37,7 +37,7 @@ class Dock_with_ship (location.SubLocation):
         self.events.append(drowned_pirates.DrownedPirates())
 
     def enter (self):
-        announce ("You enter the port and begin to approuch a small dock /nYou notice grea ships of war was well as various commercial ships moving around in a great sence of panic/nAs you get closer to the dock you notice military men dressed in a depp navy blue waiting to question you")
+        announce ("You enter the port and begin to approuch a small dock \nYou notice great ships of war was well as various commercial ships moving around in a great sence of panic\nAs you get closer to the dock you notice military men dressed in a depp navy blue waiting to question you")
     
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south"):
