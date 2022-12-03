@@ -3,7 +3,11 @@ from game import location
 from game import config
 from game.display import announce
 from game.events import *
-
+## in posrgress sub locations
+## merchant ships(from dock)
+## road to wall (from office)
+##street outside (from office)
+##
 class Island (location.Location):
 
     def __init__ (self, x, y, w):
@@ -52,10 +56,10 @@ class soilder_office (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
         self.name = "office"
-        self.verbs['north'] = self
-        self.verbs['south'] = self
-        self.verbs['east'] = self
-        self.verbs['west'] = self
+        self.verbs['window'] = self
+        self.verbs['sign'] = self
+        self.verbs['escape'] = self
+        self.verbs['BESERK'] = self
         self.event_chance = 0
 
     def enter (self):
@@ -63,28 +67,20 @@ class soilder_office (location.SubLocation):
         announce ("You and your crew enter the soilder's office.\n Three of his comrades follow in behind you shutting the door")
         announce ("Soilder Captain: Pirates or some paupers it doesn't matter we are desperate for men and will offer you food for mannig the cities walls against the rebels\nAs it stands we are under seige and all of you would be of great use to us", types = "STRING")
         announce ("This is not up for debate please sign here *unfurles a contract of enlistment*")
-
+        announce("______________       _____\n|            (go window) |\n|                        |\n|      |   desk |        |\n|      |        |        |\n|      (go  sign)        |\n|                        |\n|                        |\n|                   Door   /\n|      (escape enlistment)/\n|________________________/\n\n ******** GO BESERK ********\n*** for combat encounter ***", types = "COMMENT")
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
-            config.the_player.next_loc = self.main_location.locations["beach"]
 
 
-class marketplace (location.SubLocation):
-    def __init__ (self, m):
-        super().__init__(m)
-        self.name = "market"
-        self.verbs['trade'] = self
-        self.verbs['north'] = self
-        self.verbs['east'] = self
-        self.verbs['west'] = self
-        self.event_chance = 50
 
-    def enter (self):
-        announce ("**********HUSTLE AND BUSTLE MARKET**********")
-    
-    def process_verb (self, verb, cmd_list, nouns):
-        if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
-            config.the_player.next_loc = self.main_location.locations["beach"]
+
+
+
+
+
+
+
+
 
 
 
@@ -117,7 +113,8 @@ class marketplace (location.SubLocation):
 ## |      (escape enlistment)/
 ## |________________________/
 ##
-##
+##  ******** GO BESERK ********
+## *** for combat encounter ***
 ##
 
 
