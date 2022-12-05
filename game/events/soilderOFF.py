@@ -4,7 +4,7 @@ from game.combat import Combat
 from game.combat import Soilder
 from game.display import announce
 
-class DrownedPirates (event.Event):
+class Soildersquad (event.Event):
 
     def __init__ (self):
         self.name = " The soilders attack! "
@@ -13,12 +13,12 @@ class DrownedPirates (event.Event):
         result = {}
         result["message"] = "the soilders are defeated!"
         monsters = []
-        monsters.append(Drowned("Soilder captain"))
+        monsters.append(Soilder("Soilder captain"))
         monsters[0].speed = 1.2*monsters[0].speed
         monsters[0].health = 2*monsters[0].health
         n = 1
         while n <= 4:
-            monsters.append(Soilder("Drowned pirate "+str(n)))
+            monsters.append(Soilder("soidlers "+str(n)))
             n += 1
         announce ("The soidlers attack you and your crew")
         Combat(monsters).combat()

@@ -19,7 +19,7 @@ class Island (location.Location):
         self.locations = {}
         self.locations["Dock_with_ship"] = self.starting_location
         self.locations["soilder_office"] = soilder_office(self)
-        self.locations["marketplace"] = soilder_office(self)
+        self.locations["marketplace"] = marketplace(self)
     def enter (self, ship):
         announce ("You and your crew come apon the coast of a vast island\nYou pass various large sugar planations and notice ominous plooms of smoke\nYou also see what seems to be a busy port in the distance", types = "COMMENT")
 
@@ -60,16 +60,31 @@ class soilder_office (location.SubLocation):
         self.verbs['sign'] = self
         self.verbs['escape'] = self
         self.verbs['BESERK'] = self
-        self.event_chance = 0
-
     def enter (self):
         announce ("Soilder Captain: Hola inglés I assume? please come into my offive", types = "STRING")
-        announce ("You and your crew enter the soilder's office.\n Three of his comrades follow in behind you shutting the door")
+        announce ("You and your crew enter the soilder's office.\n Four of his comrades follow in behind you shutting the door")
         announce ("Soilder Captain: Pirates or some paupers it doesn't matter we are desperate for men and will offer you food for mannig the cities walls against the rebels\nAs it stands we are under seige and all of you would be of great use to us", types = "STRING")
         announce ("This is not up for debate please sign here *unfurles a contract of enlistment*")
-        announce("______________       _____\n|            (go window) |\n|                        |\n|      |   desk |        |\n|      |        |        |\n|      (go  sign)        |\n|                        |\n|                        |\n|                   Door   /\n|      (escape enlistment)/\n|________________________/\n\n ******** GO BESERK ********\n*** for combat encounter ***", types = "COMMENT")
+        announce ("______________       _____\n|            (go window) |\n|                        |\n|      |   desk |        |\n|      |        |        |\n|      (go  sign)        |\n|                        |\n|                        |\n|                   Door   /\n|      (escape enlistment)/\n|________________________/\n\n ******** GO BESERK ********\n*** for combat encounter ***", types = "COMMENT")
     def process_verb (self, verb, cmd_list, nouns):
         if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
+            return
+class marketplace (location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "marketplace"
+        self.verbs['window'] = self
+        self.verbs['sign'] = self
+        self.verbs['escape'] = self
+        self.verbs['BESERK'] = self
+        self.event_chance = 99
+        self.events.append(soilderOFF.Soildersquad())
+
+    def enter (self):
+        announce ("TEST")
+    def process_verb (self, verb, cmd_list, nouns):
+        if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
+            pass
 
 
 
@@ -120,26 +135,13 @@ class soilder_office (location.SubLocation):
 
 
 
+##          |   North   |
+##          |   slums   |
+##          |           |
+## _________|           |__________
+##
+##  West                      east
+##  park                      Docks
+## ________________________________
+##          
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            
