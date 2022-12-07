@@ -20,6 +20,7 @@ class Island (location.Location):
         self.locations["Dock_with_ship"] = self.starting_location
         self.locations["soilder_office"] = soilder_office(self)
         self.locations["marketplace"] = marketplace(self)
+        self.locations["merchant"] = merchant(self)
     def enter (self, ship):
         announce ("You and your crew come apon the coast of a vast island\nYou pass various large sugar planations and notice ominous plooms of smoke\nYou also see what seems to be a busy port in the distance", types = "COMMENT")
 
@@ -50,7 +51,7 @@ class Dock_with_ship (location.SubLocation):
         elif (verb == "west"):
             config.the_player.next_loc = self.main_location.locations["marketplace"]
         elif (verb == "east"):
-            config.the_player.next_loc = self.main_location.locations[""]
+            config.the_player.next_loc = self.main_location.locations["merchant"]
 
 class soilder_office (location.SubLocation):
     def __init__ (self, m):
@@ -73,17 +74,29 @@ class marketplace (location.SubLocation):
     def __init__ (self, m):
         super().__init__(m)
         self.name = "marketplace"
-        self.verbs['window'] = self
-        self.verbs['sign'] = self
-        self.verbs['escape'] = self
-        self.verbs['BESERK'] = self
-        self.event_chance = 99
+        self.verbs['north'] = self
+        self.verbs['west'] = self
+        self.verbs['east'] = self
+        self.event_chance = 51
         self.events.append(soilderOFF.Soildersquad())
 
     def enter (self):
-        announce ("TEST")
+        announce ("As you make your way your way to the market the soildes dart to catch you!")
     def process_verb (self, verb, cmd_list, nouns):
-        if (verb == "south" or verb == "north" or verb == "east" or verb == "west"):
+        if (verb == "north" or verb == "east" or verb == "west"):
+            pass
+
+class merchant (location.SubLocation):
+    def __init__ (self, m):
+        super().__init__(m)
+        self.name = "marketplace"
+        self.verbs['ship'] = self
+        self.verbs['west'] = self
+
+    def enter (self):
+        announce ("CHECK")
+    def process_verb (self, verb, cmd_list, nouns):
+        if (verb == "ship" or verb == "west"):
             pass
 
 
@@ -124,7 +137,7 @@ class marketplace (location.SubLocation):
 ## |      (go  sign)        |
 ## |                        |
 ## |                        |
-## |                   Door   /
+## |                go Door   /
 ## |      (escape enlistment)/
 ## |________________________/
 ##
@@ -145,3 +158,29 @@ class marketplace (location.SubLocation):
 ## ________________________________
 ##          
 
+
+
+##                                       /| 
+##                                      / |
+##                                     /  |
+##                                    /___|
+##                             \        |        /
+##                              \_______|_______/
+##                               \_____________/
+##                    _____________________________
+##                   |                Ship         |
+##                   |                             |
+##                   |                             |
+##                   |                             | 
+## __________________|                             |
+##                                                 |
+##  West                                           |
+##  Docks                                          |
+## ________________________________________________|
+##
+##
+##
+
+
+
+        
